@@ -1,0 +1,26 @@
+version: '3'
+services:
+    app:
+        build: .
+        restart: on-failure
+        depends_on:
+            - postgres
+            - redis
+        ports:
+            - 9229:9229
+            - 8080:8080
+        volumes:
+            - /app/node_modules
+            - .:/app
+        env_file: .env.local
+    postgres:
+        image: postgres:13.2-alpine
+        restart: on-failure
+        volumes:
+            - ./stock-management.sql:/docker-entrypoint-initdb.d/init.db
+            - ./init.sh:/docker-entrypoint-initdb.d/init.sh
+        environment:
+            - POSTGRES_PASSWORD=postgres
+    redis:
+        image: redis:6.0.10-alpine
+        restart: on-failure
